@@ -52,8 +52,4 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         presenter.dropView();
         super.onStop();
     }
-
-    public void showMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
 }

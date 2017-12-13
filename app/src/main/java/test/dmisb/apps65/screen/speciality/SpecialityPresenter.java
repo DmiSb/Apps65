@@ -29,7 +29,7 @@ public class SpecialityPresenter extends BasePresenter<SpecialityFragment> {
                                 getView().addSpeciality(speciality);
                             }
                         },
-                        throwable -> {} //getView().showMessage(throwable.toString())
+                        throwable -> router.showSystemMessage(throwable.getMessage())
                 );
     }
 

@@ -30,7 +30,7 @@ public class UsersPresenter extends BasePresenter<UsersFragment> {
             repository.getUsersBySpeciality(specialityId)
                     .subscribe(
                             userEntity -> getView().addUser(userEntity),
-                            throwable -> getView().showMessage(throwable.toString())
+                            throwable -> router.showSystemMessage(throwable.getMessage())
                     );
         }
     }

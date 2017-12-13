@@ -11,7 +11,7 @@ public class DetailPresenter extends BasePresenter<DetailFragment> {
 
     private final String fullName;
 
-    public DetailPresenter(String fullName) {
+    DetailPresenter(String fullName) {
         this.fullName = fullName;
     }
 
@@ -39,7 +39,7 @@ public class DetailPresenter extends BasePresenter<DetailFragment> {
                                 if (TextUtils.isEmpty(divider))
                                     divider.append(",\n");
                             },
-                            throwable -> {},
+                            throwable -> router.showSystemMessage(throwable.getMessage()),
                             () -> getView().setSpeciality(speciality.toString())
                     );
         }
