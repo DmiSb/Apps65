@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/status_bar"
+    android:background="@color/gray">
+
+    <ImageView
+        android:id="@+id/detail_back"
+        style="@style/BackButton"
+        tools:ignore="ContentDescription" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_16"
+        app:cardElevation="@dimen/size_4">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:padding="@dimen/size_16">
+
+            <ImageView
+                android:id="@+id/detail_avatar"
+                android:layout_width="@dimen/size_72"
+                android:layout_height="@dimen/size_72"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/size_16"
+                tools:ignore="RtlHardcoded">
+
+                <TextView
+                    android:id="@+id/detail_first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/font_normal"
+                    android:textColor="@color/black"
+                    tools:text="Иванов"/>
+
+                <TextView
+                    android:id="@+id/detail_last_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_4"
+                    android:textSize="@dimen/font_normal"
+                    android:textColor="@color/black"
+                    tools:text="Иван"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_16">
+
+                    <TextView
+                        android:id="@+id/detail_birthday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/font_little"
+                        tools:text="25.05.2001"/>
+
+                    <TextView
+                        android:id="@+id/detail_age"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/font_little"
+                        android:layout_alignParentRight="true"
+                        tools:text="15 лет"
+                        tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/detail_speciality"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_16"
+                    android:textColor="@color/black"
+                    tools:text="Менеджер"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

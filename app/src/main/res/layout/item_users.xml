@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/user_wrp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_56"
+        android:layout_marginTop="@dimen/size_4"
+        android:layout_marginLeft="@dimen/size_16"
+        android:layout_marginRight="@dimen/size_16"
+        android:layout_marginBottom="@dimen/size_4"
+        app:cardElevation="@dimen/size_4">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/size_16"
+            android:paddingRight="@dimen/size_16">
+
+            <TextView
+                android:id="@+id/user_full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                tools:text="Иванов Иван"/>
+
+            <TextView
+                android:id="@+id/user_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                tools:text="15 лет"
+                tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

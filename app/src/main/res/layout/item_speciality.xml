@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_56"
+        android:layout_marginTop="@dimen/size_4"
+        android:layout_marginLeft="@dimen/size_16"
+        android:layout_marginRight="@dimen/size_16"
+        android:layout_marginBottom="@dimen/size_4"
+        app:cardElevation="@dimen/size_4">
+
+        <TextView
+            android:id="@+id/speciality_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/size_16"
+            android:paddingRight="@dimen/size_16"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/font_normal"
+            android:textColor="@color/black"
+            tools:text="Менеджер"/>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

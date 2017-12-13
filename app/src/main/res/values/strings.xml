@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Apps65</string>
+
+    <string name="speciality_list">Speciality list</string>
+
+    <string name="user_list">User list of %s</string>
+
+    <plurals name="user_age">
+        <item quantity="one">%1$d год</item>
+        <item quantity="few">%1$d года</item>
+        <item quantity="many">%1$d лет</item>
+        <item quantity="other">%1$d лет</item>
+    </plurals>
+
+</resources>
