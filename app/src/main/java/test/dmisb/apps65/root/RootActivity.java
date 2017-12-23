@@ -45,29 +45,4 @@ public class RootActivity extends MvpAppCompatActivity implements RootView {
         navigatorHolder.removeNavigator();
         super.onPause();
     }
-
-    /*@Override
-    public void onBackPressed() {
-        Fragment fragment = getVisibleFragment();
-        if (fragment == null || !((IBaseView) fragment).onSystemBackPressed()) {
-            super.onBackPressed();
-        }
-    }
-
-    private Fragment getVisibleFragment(){
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        if(fragments != null){
-            for(Fragment fragment : fragments){
-                if(fragment != null && fragment.isVisible())
-                    return fragment;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean onSystemBackPressed() {
-        return false;
-    }*/
 }
