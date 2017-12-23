@@ -6,6 +6,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.requery.Persistable;
 import io.requery.reactivex.ReactiveEntityStore;
+import test.dmisb.apps65.data.dto.SpecialityDto;
+import test.dmisb.apps65.data.dto.UserDto;
 import test.dmisb.apps65.data.network.res.SpecialityRes;
 import test.dmisb.apps65.data.network.res.UserRes;
 import test.dmisb.apps65.data.storage.model.SpecialityEntity;
@@ -31,7 +33,7 @@ public class StorageManager {
         userEntity.setLastName(lastName);
 
         userEntity.setFullName(firstName + " " + lastName);
-        userEntity.setAvatrUrl(user.getAvatrUrl());
+        userEntity.setAvatarUrl(user.getAvatrUrl());
         userEntity.setBirthday(user.getBirthday());
 
         storage.upsert(userEntity).subscribe();
@@ -40,29 +42,30 @@ public class StorageManager {
     }
 
     private void saveSpeciality(List<SpecialityRes> specialities, UserEntity userEntity) {
-        List<UserEntity_SpecialityEntity> specialityEntities = new ArrayList<>();
-        SpecialityEntity entity;
+        List<UserEntity_SpecialityEntity> joinEntities = new ArrayList<>();
+        SpecialityEntity speciality;
         UserEntity_SpecialityEntity join;
 
         for (SpecialityRes specialityRes : specialities) {
-            entity = new SpecialityEntity();
-            entity.setId(specialityRes.getId());
-            entity.setSpecialityName(specialityRes.getName());
-            storage.upsert(specialityEntities).subscribe();
+            speciality = new SpecialityEntity();
+            speciality.setId(specialityRes.getId());
+            speciality.setSpecialityName(specialityRes.getName());
+            storage.upsert(speciality).subscribe();
 
             join = new UserEntity_SpecialityEntity();
             join.setUserId(userEntity.getFullName());
-            join.setSpecialityId(entity.getId());
-            specialityEntities.add(join);
+            join.setSpecialityId(speciality.getId());
+            joinEntities.add(join);
         }
 
-        storage.upsert(specialityEntities).subscribe();
+        storage.upsert(joinEntities).subscribe();
     }
 
-    public Observable<SpecialityEntity> getSpeciality() {
+    public Observable<SpecialityDto> getSpeciality() {
         return storage.select(SpecialityEntity.class)
                 .get()
-                .observable();
+                .observable()
+                .flatMap(specialityEntity -> Observable.just(new SpecialityDto(specialityEntity)));
     }
 
     public SpecialityEntity getSpecialityById(int specialityId) {
@@ -91,10 +94,15 @@ public class StorageManager {
 
     }
 
-    public UserEntity getUserByName(String fullName) {
+    private UserEntity getUser(String fullName) {
         return storage.select(UserEntity.class)
                 .where(UserEntity.FULL_NAME.eq(fullName))
                 .get()
                 .firstOrNull();
+    }
+
+    public UserDto getUserByName(String fullName) {
+        UserEntity user = getUser(fullName);
+        return user != null ? new UserDto(user) : null;
     }
 }

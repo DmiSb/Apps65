@@ -1,29 +1,21 @@
 package test.dmisb.apps65.screen.users;
 
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import test.dmisb.apps65.R;
 import test.dmisb.apps65.core.BaseAdapter;
 import test.dmisb.apps65.core.BaseHolder;
-import test.dmisb.apps65.data.storage.model.UserEntity;
-import test.dmisb.apps65.di.DaggerService;
-import test.dmisb.apps65.di.Scopes;
+import test.dmisb.apps65.data.dto.UserDto;
 import test.dmisb.apps65.utils.CalcUtils;
 
-public class UsersAdapter extends BaseAdapter<UserEntity, UsersAdapter.Holder> {
+class UsersAdapter extends BaseAdapter<UserDto, UsersAdapter.Holder> {
 
-    @Inject
-    UsersPresenter presenter;
+    private UsersPresenter presenter;
 
-    public UsersAdapter() {
-        UsersFragment.Component component = DaggerService.getComponent(Scopes.USERS_SCOPE);
-        if (component != null)
-            component.inject(this);
+    UsersAdapter(UsersPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -33,7 +25,7 @@ public class UsersAdapter extends BaseAdapter<UserEntity, UsersAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        UserEntity user = getItems().get(position);
+        UserDto user = getItems().get(position);
         holder.userName.setText(user.getFullName());
         if (user.getBirthday() != null) {
             int years = CalcUtils.calcAge(user.getBirthday());
@@ -42,24 +34,24 @@ public class UsersAdapter extends BaseAdapter<UserEntity, UsersAdapter.Holder> {
         } else {
             holder.userAge.setText("-");
         }
-        holder.userWrp.setOnClickListener(v -> presenter.onItemClick(user.getFullName()));
     }
 
-    void addItem(UserEntity user) {
-        getItems().add(user);
-        notifyDataSetChanged();
-    }
-
-    class Holder extends BaseHolder {
+    class Holder extends BaseHolder implements View.OnClickListener {
         final TextView userName;
         final TextView userAge;
-        final CardView userWrp;
 
         Holder(View itemView) {
             super(itemView);
             userName = $(R.id.user_full_name);
             userAge = $(R.id.user_age);
-            userWrp = $(R.id.user_wrp);
+
+            $(R.id.user_wrp).setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            UserDto user = getItems().get(getAdapterPosition());
+            presenter.onItemClick(user.getFullName());
         }
     }
 }

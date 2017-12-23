@@ -1,25 +1,23 @@
 package test.dmisb.apps65.root;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import java.util.List;
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import javax.inject.Inject;
 
 import ru.terrakok.cicerone.NavigatorHolder;
 import test.dmisb.apps65.R;
-import test.dmisb.apps65.core.IBaseView;
-import test.dmisb.apps65.di.DaggerService;
 import test.dmisb.apps65.di.Scopes;
-import test.dmisb.apps65.di.components.RootComponent;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class RootActivity extends AppCompatActivity implements IBaseView {
+public class RootActivity extends MvpAppCompatActivity implements RootView {
 
-    @Inject
+    @InjectPresenter
     RootPresenter presenter;
+
     @Inject
     NavigatorHolder navigatorHolder;
 
@@ -28,30 +26,27 @@ public class RootActivity extends AppCompatActivity implements IBaseView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_root);
 
-        initComponent();
+        initToothPick();
     }
 
-    private void initComponent() {
-        RootComponent component = DaggerService.getComponent(Scopes.ROOT_SCOPE);
-        if (component != null)
-            component.inject(this);
+    private void initToothPick() {
+        Scope scope = Toothpick.openScope(Scopes.APP_SCOPE);
+        Toothpick.inject(this, scope);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         navigatorHolder.setNavigator(new RootNavigator(this, R.id.root_frame));
-        presenter.takeView(this);
     }
 
     @Override
     protected void onPause() {
         navigatorHolder.removeNavigator();
-        presenter.dropView();
         super.onPause();
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         Fragment fragment = getVisibleFragment();
         if (fragment == null || !((IBaseView) fragment).onSystemBackPressed()) {
@@ -74,5 +69,5 @@ public class RootActivity extends AppCompatActivity implements IBaseView {
     @Override
     public boolean onSystemBackPressed() {
         return false;
-    }
+    }*/
 }

@@ -6,30 +6,26 @@ import android.content.Context;
 import com.facebook.stetho.Stetho;
 
 import ru.terrakok.cicerone.Cicerone;
-import test.dmisb.apps65.di.DaggerService;
 import test.dmisb.apps65.di.Scopes;
-import test.dmisb.apps65.di.components.AppComponent;
-import test.dmisb.apps65.di.components.DaggerAppComponent;
-import test.dmisb.apps65.di.components.DataComponent;
-import test.dmisb.apps65.di.components.RootComponent;
-import test.dmisb.apps65.di.modules.AppModule;
-import test.dmisb.apps65.di.modules.DataModule;
-import test.dmisb.apps65.di.modules.RootModule;
+import test.dmisb.apps65.di.AppModule;
+import test.dmisb.apps65.di.DataModule;
 import test.dmisb.apps65.utils.FormatUtils;
+import toothpick.Toothpick;
+import toothpick.configuration.Configuration;
 
 
 public class App extends Application {
 
     private static Context appContext;
-    private Cicerone cicerone;
 
     @Override
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-        cicerone = Cicerone.create();
 
-        initDaggerComponents();
+        initToothpick();
+        initScopes();
+
         FormatUtils.initFormats();
         initStetho();
     }
@@ -38,15 +34,19 @@ public class App extends Application {
         return appContext;
     }
 
-    private void initDaggerComponents() {
-        AppComponent appComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(appContext, cicerone))
-                .build();
-        DataComponent dataComponent = appComponent.plus(new DataModule());
-        DaggerService.registerComponent(Scopes.DATA_SCOPE, dataComponent);
+    private void initToothpick() {
+        if (BuildConfig.DEBUG) {
+            Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes());
+        } else {
+            Toothpick.setConfiguration(Configuration.forProduction().disableReflection());
+        }
+    }
 
-        RootComponent rootComponent = dataComponent.plus(new RootModule());
-        DaggerService.registerComponent(Scopes.ROOT_SCOPE, rootComponent);
+    private void initScopes() {
+        Toothpick.openScope(Scopes.APP_SCOPE)
+                .installModules(new AppModule(appContext));
+        Toothpick.openScopes(Scopes.APP_SCOPE, Scopes.DATA_SCOPE)
+                .installModules(new DataModule(appContext));
     }
 
     private void initStetho() {

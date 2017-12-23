@@ -6,26 +6,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
-import dagger.Provides;
+import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import java.util.List;
+
 import test.dmisb.apps65.R;
 import test.dmisb.apps65.core.BaseFragment;
-import test.dmisb.apps65.data.storage.model.UserEntity;
-import test.dmisb.apps65.di.DaggerScope;
-import test.dmisb.apps65.di.DaggerService;
-import test.dmisb.apps65.di.Scopes;
-import test.dmisb.apps65.di.components.RootComponent;
+import test.dmisb.apps65.data.dto.UserDto;
 
-public class UsersFragment extends BaseFragment<UsersPresenter>{
+public class UsersFragment extends BaseFragment implements UsersView {
 
-    private static int specialityId;
+    private int specialityId;
     private UsersAdapter adapter;
 
-    public static UsersFragment newInstance(int specialityId) {
-        registerComponent();
-        UsersFragment instance = new UsersFragment();
-        instance.specialityId = specialityId;
-        return instance;
-    }
+    @InjectPresenter
+    UsersPresenter presenter;
 
     @Override
     protected int getLayoutRes() {
@@ -34,68 +29,30 @@ public class UsersFragment extends BaseFragment<UsersPresenter>{
 
     @Override
     protected void initView(@Nullable Bundle bundle) {
-        $(R.id.users_back).setOnClickListener(v -> presenter.onBackClick());
+        presenter.setSpecialityId(specialityId);
 
-        adapter = new UsersAdapter();
+        adapter = new UsersAdapter(presenter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         RecyclerView list = $(R.id.users_list);
         list.setLayoutManager(layoutManager);
         list.setAdapter(adapter);
+
+        $(R.id.users_back).setOnClickListener(v -> presenter.onBackClick());
+    }
+
+    public void setSpecialityId(int specialityId) {
+        this.specialityId = specialityId;
     }
 
     @Override
-    public boolean onSystemBackPressed() {
-        presenter.onBackClick();
-        return true;
-    }
-
-    void setTitle(String specialityName) {
+    public void setTitle(String specialityName) {
         String text = getString(R.string.user_list);
         text = String.format(text, specialityName);
         ((TextView) $(R.id.users_title)).setText(text);
     }
 
-    void addUser(UserEntity user) {
-        adapter.addItem(user);
-    }
-
-    //region ================= DI =================
-
-    private static void registerComponent() {
-        if (DaggerService.getComponent(Scopes.USERS_SCOPE) == null) {
-            RootComponent rootComponent = DaggerService.getComponent(Scopes.ROOT_SCOPE);
-            if (rootComponent != null) {
-                UsersFragment.Component component = rootComponent.plusUsers(new UsersFragment.Module());
-                if (component != null) {
-                    DaggerService.registerComponent(Scopes.USERS_SCOPE, component);
-                }
-            }
-        }
-    }
-
     @Override
-    protected void initComponent() {
-        UsersFragment.Component component = DaggerService.getComponent(Scopes.USERS_SCOPE);
-        if (component != null)
-            component.inject(this);
+    public void setItems(List<UserDto> items) {
+        adapter.setItems(items);
     }
-
-    @dagger.Module
-    public static class Module {
-        @Provides
-        @DaggerScope(UsersFragment.class)
-        UsersPresenter provideUsersPresenter() {
-            return new UsersPresenter(specialityId);
-        }
-    }
-
-    @dagger.Subcomponent(modules = Module.class)
-    @DaggerScope(UsersFragment.class)
-    public interface Component {
-        void inject(UsersFragment fragment);
-        void inject(UsersPresenter presenter);
-        void inject(UsersAdapter adapter);
-    }
-
-    //endregion
 }

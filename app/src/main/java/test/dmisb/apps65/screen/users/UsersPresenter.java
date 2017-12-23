@@ -1,42 +1,49 @@
 package test.dmisb.apps65.screen.users;
 
+import com.arellomobile.mvp.InjectViewState;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import test.dmisb.apps65.core.BasePresenter;
-import test.dmisb.apps65.data.storage.model.SpecialityEntity;
-import test.dmisb.apps65.di.DaggerService;
 import test.dmisb.apps65.di.Scopes;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class UsersPresenter extends BasePresenter<UsersFragment> {
+@InjectViewState
+public class UsersPresenter extends BasePresenter<UsersView> {
 
-    private final int specialityId;
-
-    UsersPresenter(int specialityId) {
-        this.specialityId = specialityId;
-    }
+    private int specialityId;
 
     @Override
     protected void initComponent() {
-        UsersFragment.Component component = DaggerService.getComponent(Scopes.USERS_SCOPE);
-        if (component != null)
-            component.inject(this);
+        Scope scope = Toothpick.openScope(Scopes.DATA_SCOPE);
+        Toothpick.inject(this, scope);
     }
 
     @Override
-    protected void onAttachView() {
-        if (getView() != null) {
-            SpecialityEntity speciality = repository.getSpecialityById(specialityId);
-            if (speciality != null)
-                getView().setTitle(speciality.getSpecialityName());
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        repository.getSpecialityById(specialityId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    speciality -> getViewState().setTitle(speciality.getName())
+                );
 
-            repository.getUsersBySpeciality(specialityId)
-                    .subscribe(
-                            userEntity -> getView().addUser(userEntity),
-                            throwable -> router.showSystemMessage(throwable.getMessage())
-                    );
-        }
+        repository.getUsersBySpeciality(specialityId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        users -> getViewState().setItems(users),
+                        throwable -> router.showSystemMessage(throwable.getMessage())
+                );
+    }
+
+    void setSpecialityId(int specialityId) {
+        this.specialityId = specialityId;
     }
 
     void onBackClick() {
-        DaggerService.unregisterComponent(Scopes.USERS_SCOPE);
         router.exit();
     }
 

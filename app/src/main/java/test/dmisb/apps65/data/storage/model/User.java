@@ -16,7 +16,7 @@ interface User extends Persistable {
     String getFirstName();
     String getLastName();
     Date getBirthday();
-    String getAvatrUrl();
+    String getAvatarUrl();
     @ManyToMany
     @JunctionTable
     Result<Speciality> getSpeciality();

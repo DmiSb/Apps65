@@ -2,51 +2,57 @@ package test.dmisb.apps65.screen.detail;
 
 import android.text.TextUtils;
 
+import com.arellomobile.mvp.InjectViewState;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import test.dmisb.apps65.core.BasePresenter;
-import test.dmisb.apps65.data.storage.model.UserEntity;
-import test.dmisb.apps65.di.DaggerService;
+import test.dmisb.apps65.data.dto.UserDto;
 import test.dmisb.apps65.di.Scopes;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class DetailPresenter extends BasePresenter<DetailFragment> {
+@InjectViewState
+public class DetailPresenter extends BasePresenter<DetailView> {
 
-    private final String fullName;
-
-    DetailPresenter(String fullName) {
-        this.fullName = fullName;
-    }
+    private String fullName;
 
     @Override
     protected void initComponent() {
-        DetailFragment.Component component = DaggerService.getComponent(Scopes.DETAIL_SCOPE);
-        if (component != null)
-            component.inject(this);
+        Scope scope = Toothpick.openScope(Scopes.DATA_SCOPE);
+        Toothpick.inject(this, scope);
     }
 
     @Override
-    protected void onAttachView() {
-        if (getView() != null) {
-            UserEntity user = repository.getUserByName(fullName);
-            if (user != null) {
-                getView().setUserData(user);
-            }
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
 
-            StringBuilder speciality = new StringBuilder("");
-            StringBuilder divider = new StringBuilder("");
-            repository.getSpecialityByUser(fullName)
-                    .subscribe(
-                            specialityEntity -> {
-                                speciality.append(divider).append(specialityEntity.getSpecialityName());
-                                if (TextUtils.isEmpty(divider))
-                                    divider.append(",\n");
-                            },
-                            throwable -> router.showSystemMessage(throwable.getMessage()),
-                            () -> getView().setSpeciality(speciality.toString())
-                    );
+        UserDto user = repository.getUserByName(fullName);
+        if (user != null) {
+            getViewState().setUserData(user);
         }
+
+        StringBuilder specialities = new StringBuilder("");
+        StringBuilder divider = new StringBuilder("");
+        repository.getSpecialityByUser(fullName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        speciality -> {
+                            specialities.append(divider).append(speciality.getName());
+                            if (TextUtils.isEmpty(divider))
+                                divider.append(",\n");
+                        },
+                        throwable -> router.showSystemMessage(throwable.getMessage()),
+                        () -> getViewState().setSpeciality(specialities.toString())
+                );
+    }
+
+    void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     void onBackClick() {
-        DaggerService.unregisterComponent(Scopes.DETAIL_SCOPE);
         router.exit();
     }
 }

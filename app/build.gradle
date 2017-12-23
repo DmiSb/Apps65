@@ -29,6 +29,8 @@ ext {
     retrofit = "2.2.0"
     okhttp = "3.6.0"
     requery = "1.4.1"
+    moxy = "1.5.3"
+    toothpick = "1.1.1"
 }
 
 dependencies {
@@ -59,9 +61,9 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:$okhttp"
     compile "com.squareup.okhttp3:logging-interceptor:$okhttp"
 
-    // Dagger 2
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.13'
-    compile 'com.google.dagger:dagger:2.13'
+    // DI Toothpick
+    compile "com.github.stephanenicolas.toothpick:toothpick-runtime:$toothpick"
+    annotationProcessor "com.github.stephanenicolas.toothpick:toothpick-compiler:$toothpick"
 
     // Requery
     compile "io.requery:requery:$requery"
@@ -70,6 +72,11 @@ dependencies {
 
     // Cicerone Navigation
     compile 'ru.terrakok.cicerone:cicerone:2.1.0'
+
+    // Moxy
+    compile "com.arello-mobile:moxy:$moxy"
+    compile "com.arello-mobile:moxy-app-compat:$moxy"
+    annotationProcessor "com.arello-mobile:moxy-compiler:$moxy"
 
     // Stetho
     compile 'com.facebook.stetho:stetho:1.5.0'

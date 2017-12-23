@@ -24,9 +24,18 @@ class RootNavigator extends SupportAppNavigator {
     @Override
     protected Fragment createFragment(String screenKey, Object data) {
         switch (screenKey) {
-            case Scopes.SPECIALITY_SCOPE:   return SpecialityFragment.newInstance();
-            case Scopes.USERS_SCOPE:        return UsersFragment.newInstance((int) data);
-            case Scopes.DETAIL_SCOPE:       return DetailFragment.newInstance((String) data);
+            case Scopes.SPECIALITY_SCOPE:
+                return new SpecialityFragment();
+
+            case Scopes.USERS_SCOPE:
+                UsersFragment usersFragment = new UsersFragment();
+                usersFragment.setSpecialityId((int) data);
+                return usersFragment;
+
+            case Scopes.DETAIL_SCOPE:
+                DetailFragment detailFragment = new DetailFragment();
+                detailFragment.setFullName((String) data);
+                return detailFragment;
         }
         return null;
     }

@@ -1,27 +1,29 @@
 package test.dmisb.apps65.root;
 
-import test.dmisb.apps65.core.BasePresenter;
-import test.dmisb.apps65.di.DaggerService;
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
+
+import javax.inject.Inject;
+
+import ru.terrakok.cicerone.Router;
 import test.dmisb.apps65.di.Scopes;
-import test.dmisb.apps65.di.components.RootComponent;
-import test.dmisb.apps65.screen.speciality.SpecialityFragment;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class RootPresenter extends BasePresenter<RootActivity> {
+@InjectViewState
+public class RootPresenter extends MvpPresenter<RootView> {
 
-    private boolean started = false;
+    @Inject
+    Router router;
 
-    @Override
-    protected void initComponent() {
-        RootComponent component = DaggerService.getComponent(Scopes.ROOT_SCOPE);
-        if (component != null)
-            component.inject(this);
+    RootPresenter() {
+        Scope scope = Toothpick.openScope(Scopes.DATA_SCOPE);
+        Toothpick.inject(this, scope);
     }
 
     @Override
-    protected void onAttachView() {
-        if (!started) {
-            router.newRootScreen(Scopes.SPECIALITY_SCOPE, new SpecialityFragment());
-            started = true;
-        }
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        router.newRootScreen(Scopes.SPECIALITY_SCOPE);
     }
 }

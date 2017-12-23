@@ -1,5 +1,6 @@
 package test.dmisb.apps65.core;
 
-public interface IBaseView {
-    boolean onSystemBackPressed();
+import com.arellomobile.mvp.MvpView;
+
+public interface IBaseView extends MvpView {
 }

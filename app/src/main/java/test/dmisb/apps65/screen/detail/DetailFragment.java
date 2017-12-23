@@ -5,23 +5,19 @@ import android.support.annotation.Nullable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import dagger.Provides;
 import test.dmisb.apps65.R;
 import test.dmisb.apps65.core.BaseFragment;
-import test.dmisb.apps65.data.storage.model.UserEntity;
-import test.dmisb.apps65.di.DaggerScope;
-import test.dmisb.apps65.di.DaggerService;
-import test.dmisb.apps65.di.Scopes;
-import test.dmisb.apps65.di.components.RootComponent;
+import test.dmisb.apps65.data.dto.UserDto;
 import test.dmisb.apps65.utils.CalcUtils;
 import test.dmisb.apps65.utils.FormatUtils;
 
-public class DetailFragment extends BaseFragment<DetailPresenter> {
+public class DetailFragment extends BaseFragment implements DetailView {
 
-    private static String fullName;
+    private String fullName;
 
     private TextView firstName;
     private TextView lastName;
@@ -30,11 +26,11 @@ public class DetailFragment extends BaseFragment<DetailPresenter> {
     private TextView speciality;
     private ImageView avatarImg;
 
-    public static DetailFragment newInstance(String fullName) {
-        registerComponent();
-        DetailFragment instance = new DetailFragment();
-        instance.fullName = fullName;
-        return instance;
+    @InjectPresenter
+    DetailPresenter presenter;
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     @Override
@@ -44,6 +40,8 @@ public class DetailFragment extends BaseFragment<DetailPresenter> {
 
     @Override
     protected void initView(@Nullable Bundle bundle) {
+        presenter.setFullName(fullName);
+
         firstName = $(R.id.detail_first_name);
         lastName = $(R.id.detail_last_name);
         avatarImg = $(R.id.detail_avatar);
@@ -55,12 +53,7 @@ public class DetailFragment extends BaseFragment<DetailPresenter> {
     }
 
     @Override
-    public boolean onSystemBackPressed() {
-        presenter.onBackClick();
-        return true;
-    }
-
-    void setUserData(UserEntity user) {
+    public void setUserData(UserDto user) {
         firstName.setText(user.getFirstName());
         lastName.setText(user.getLastName());
 
@@ -71,7 +64,7 @@ public class DetailFragment extends BaseFragment<DetailPresenter> {
                 .error(R.drawable.ic_avatar);
 
         Glide.with(this)
-                .load(user.getAvatrUrl())
+                .load(user.getAvatarUrl())
                 .apply(options)
                 .into(avatarImg);
 
@@ -87,46 +80,8 @@ public class DetailFragment extends BaseFragment<DetailPresenter> {
         }
     }
 
-    void setSpeciality(String text) {
+    @Override
+    public void setSpeciality(String text) {
         speciality.setText(text);
     }
-
-    //region ================= DI =================
-
-    private static void registerComponent() {
-        if (DaggerService.getComponent(Scopes.DETAIL_SCOPE) == null) {
-            RootComponent rootComponent = DaggerService.getComponent(Scopes.ROOT_SCOPE);
-            if (rootComponent != null) {
-                DetailFragment.Component component = rootComponent.plusDetail(new DetailFragment.Module());
-                if (component != null) {
-                    DaggerService.registerComponent(Scopes.DETAIL_SCOPE, component);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void initComponent() {
-        DetailFragment.Component component = DaggerService.getComponent(Scopes.DETAIL_SCOPE);
-        if (component != null)
-            component.inject(this);
-    }
-
-    @dagger.Module
-    public static class Module {
-        @Provides
-        @DaggerScope(DetailFragment.class)
-        DetailPresenter provideDetailPresenter() {
-            return new DetailPresenter(fullName);
-        }
-    }
-
-    @dagger.Subcomponent(modules = Module.class)
-    @DaggerScope(DetailFragment.class)
-    public interface Component {
-        void inject(DetailFragment fragment);
-        void inject(DetailPresenter presenter);
-    }
-
-    //endregion
 }

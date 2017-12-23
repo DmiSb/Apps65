@@ -4,25 +4,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import test.dmisb.apps65.R;
 import test.dmisb.apps65.core.BaseAdapter;
 import test.dmisb.apps65.core.BaseHolder;
-import test.dmisb.apps65.data.storage.model.SpecialityEntity;
-import test.dmisb.apps65.di.DaggerService;
-import test.dmisb.apps65.di.Scopes;
+import test.dmisb.apps65.data.dto.SpecialityDto;
 
-public class SpecialityAdapter extends BaseAdapter<SpecialityEntity, SpecialityAdapter.Holder> {
+class SpecialityAdapter extends BaseAdapter<SpecialityDto, SpecialityAdapter.Holder> {
 
-    @Inject
-    SpecialityPresenter presenter;
+    private SpecialityPresenter presenter;
 
-    SpecialityAdapter() {
-        SpecialityFragment.Component component = DaggerService.getComponent(Scopes.SPECIALITY_SCOPE);
-        if (component != null) {
-            component.inject(this);
-        }
+    SpecialityAdapter(SpecialityPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -32,22 +24,23 @@ public class SpecialityAdapter extends BaseAdapter<SpecialityEntity, SpecialityA
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        SpecialityEntity speciality = getItems().get(position);
-        holder.name.setText(speciality.getSpecialityName());
-        holder.name.setOnClickListener(v -> presenter.onItemClick(speciality.getId()));
+        SpecialityDto speciality = getItems().get(position);
+        holder.name.setText(speciality.getName());
     }
 
-    void addItem(SpecialityEntity speciality) {
-        getItems().add(speciality);
-        notifyDataSetChanged();
-    }
-
-    class Holder extends BaseHolder {
+    class Holder extends BaseHolder implements View.OnClickListener{
         final TextView name;
 
         Holder(View itemView) {
             super(itemView);
             name = $(R.id.speciality_name);
+            name.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            SpecialityDto speciality = getItems().get(getAdapterPosition());
+            presenter.onItemClick(speciality.getId());
         }
     }
 }
