@@ -17,7 +17,7 @@ import test.dmisb.apps65.utils.FormatUtils;
 
 public class DetailFragment extends BaseFragment implements DetailView {
 
-    private String fullName;
+    public static final String DETAIL_KEY = "DETAIL_KEY";
 
     private TextView firstName;
     private TextView lastName;
@@ -29,10 +29,6 @@ public class DetailFragment extends BaseFragment implements DetailView {
     @InjectPresenter
     DetailPresenter presenter;
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     @Override
     protected int getLayoutRes() {
         return R.layout.fragment_detail;
@@ -40,6 +36,11 @@ public class DetailFragment extends BaseFragment implements DetailView {
 
     @Override
     protected void initView(@Nullable Bundle bundle) {
+        Bundle arguments = getArguments();
+        String fullName = "";
+        if (arguments != null) {
+            fullName = arguments.getString(DETAIL_KEY);
+        }
         presenter.setFullName(fullName);
 
         firstName = $(R.id.detail_first_name);

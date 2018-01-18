@@ -16,7 +16,7 @@ import test.dmisb.apps65.data.dto.UserDto;
 
 public class UsersFragment extends BaseFragment implements UsersView {
 
-    private int specialityId;
+    public static final String SPECIALITY_KEY = "SPECIALITY_KEY";
     private UsersAdapter adapter;
 
     @InjectPresenter
@@ -29,6 +29,11 @@ public class UsersFragment extends BaseFragment implements UsersView {
 
     @Override
     protected void initView(@Nullable Bundle bundle) {
+        Bundle arguments = getArguments();
+        int specialityId = 0;
+        if (arguments != null) {
+            specialityId = getArguments().getInt(SPECIALITY_KEY);
+        }
         presenter.setSpecialityId(specialityId);
 
         adapter = new UsersAdapter(presenter);
@@ -38,10 +43,6 @@ public class UsersFragment extends BaseFragment implements UsersView {
         list.setAdapter(adapter);
 
         $(R.id.users_back).setOnClickListener(v -> presenter.onBackClick());
-    }
-
-    public void setSpecialityId(int specialityId) {
-        this.specialityId = specialityId;
     }
 
     @Override
